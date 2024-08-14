@@ -8,15 +8,40 @@ app.use(bodyParser.json());
 
 // Create the webhook endpoint
 app.post('/api/webhook', (req, res) => {
-    const { transactionHash, status } = req.body;
+    const {
+        transactionHash,
+        finalStatus, // Updated from 'status' to 'finalStatus' to match the notification
+        amount,
+        buyerAddress,
+        currency,
+        nonce,
+        orderCode,
+        productName,
+        referenceId
+    } = req.body;
 
-    if (!transactionHash || !status) {
-        return res.status(400).json({ error: 'transactionHash and status are required' });
+    // Validate required fields
+    if (!transactionHash || !finalStatus) {
+        return res.status(400).json({ error: 'transactionHash and finalStatus are required' });
     }
 
-    console.log(`Received transaction update: Hash: ${transactionHash}, Status: ${status}`);
+    // Optionally validate other fields if needed
+    if (!amount || !buyerAddress || !currency || !nonce || !orderCode || !productName || !referenceId) {
+        console.warn('Some optional fields are missing.');
+    }
 
-    // Here you can add any logic to process the transaction status, 
+    console.log(`Received transaction update:
+        Hash: ${transactionHash},
+        Status: ${finalStatus},
+        Amount: ${amount},
+        Buyer Address: ${buyerAddress},
+        Currency: ${currency},
+        Nonce: ${nonce},
+        Order Code: ${orderCode},
+        Product Name: ${productName},
+        Reference ID: ${referenceId}`);
+
+    // Here you can add any logic to process the transaction status,
     // such as updating a database, triggering other actions, etc.
 
     // Send a success response back to the sender

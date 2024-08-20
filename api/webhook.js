@@ -8,6 +8,7 @@ app.use(bodyParser.json());
 
 // Create the webhook endpoint
 app.post('/api/webhook', (req, res) => {
+    // Extract both sets of potential parameters
     const {
         transactionHash,
         finalStatus, // Updated from 'status' to 'finalStatus' to match the notification
@@ -20,32 +21,45 @@ app.post('/api/webhook', (req, res) => {
         referenceId
     } = req.body;
 
-    // Validate required fields
-    if (!transactionHash || !finalStatus) {
-        return res.status(400).json({ error: 'transactionHash and finalStatus are required' });
+    const {
+        transactionHash: solanaTransactionHash,
+        status: solanaStatus,
+        amount: solanaAmount,
+        buyerAddress: solanaBuyerAddress
+    } = req.body;
+
+    // Check which type of notification we're dealing with
+    if (transactionHash && finalStatus) {
+        // Handle the current notification format
+        console.log(`Received standard transaction update:
+            Hash: ${transactionHash},
+            Status: ${finalStatus},
+            Amount: ${amount},
+            Buyer Address: ${buyerAddress},
+            Currency: ${currency},
+            Nonce: ${nonce},
+            Order Code: ${orderCode},
+            Product Name: ${productName},
+            Reference ID: ${referenceId}`);
+
+        // Process the transaction status, update DB, etc.
+
+        res.status(200).json({ message: 'Standard transaction status received successfully' });
+    } else if (solanaTransactionHash && solanaStatus) {
+        // Handle the Solana-specific notification format
+        console.log(`Received Solana transaction update:
+            Hash: ${solanaTransactionHash},
+            Status: ${solanaStatus},
+            Amount: ${solanaAmount},
+            Buyer Address: ${solanaBuyerAddress}`);
+
+        // Process the Solana transaction status, update DB, etc.
+
+        res.status(200).json({ message: 'Solana transaction status received successfully' });
+    } else {
+        // Neither format was recognized, respond with an error
+        res.status(400).json({ error: 'Invalid request. Required fields are missing.' });
     }
-
-    // Optionally validate other fields if needed
-    if (!amount || !buyerAddress || !currency || !nonce || !orderCode || !productName || !referenceId) {
-        console.warn('Some optional fields are missing.');
-    }
-
-    console.log(`Received transaction update:
-        Hash: ${transactionHash},
-        Status: ${finalStatus},
-        Amount: ${amount},
-        Buyer Address: ${buyerAddress},
-        Currency: ${currency},
-        Nonce: ${nonce},
-        Order Code: ${orderCode},
-        Product Name: ${productName},
-        Reference ID: ${referenceId}`);
-
-    // Here you can add any logic to process the transaction status,
-    // such as updating a database, triggering other actions, etc.
-
-    // Send a success response back to the sender
-    res.status(200).json({ message: 'Transaction status received successfully' });
 });
 
 module.exports = app;

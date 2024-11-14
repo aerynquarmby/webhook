@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const axios = require('axios');
 
 const app = express();
 
@@ -8,73 +7,53 @@ const app = express();
 app.use(bodyParser.json());
 
 // Create the webhook endpoint
-app.post('/api/webhook', async (req, res) => {
-    // Extract the parameters to match the merchant notification
+app.post('/api/webhook', (req, res) => {
+    // Extract parameters based on transaction confirmation code
     const {
         transactionHash,
-        finalStatus, // Updated from 'status' to 'finalStatus' to match the notification
-        fromAddress,
+        finalStatus,
+        requestId,
+        fromChainId,
+        toChainId,
+        nativeValue, // Assuming this represents the amount
+        fromAddress, // Buyer address
         fromCurrency,
         fromNetwork,
         toNetwork,
         toCurrency,
         toAddress,
-        requestId,
-        fromAmountFormatted,
+        feeAmount,
+        fromAmountFormatted, // Amount in formatted form
         feeAmountFormatted,
         toAmountMinFormatted,
         toAmountFormatted,
-        merchantAddress,
-        merchantWebhook // URL for notifying the merchant
+        merchantAddress
     } = req.body;
 
-    // Log received data for debugging
+    // Log the received transaction update
     console.log(`Received transaction update:
         Transaction Hash: ${transactionHash},
         Status: ${finalStatus},
+        Request ID: ${requestId},
+        From Chain ID: ${fromChainId},
+        To Chain ID: ${toChainId},
+        Native Value: ${nativeValue},
         From Address: ${fromAddress},
         From Currency: ${fromCurrency},
         From Network: ${fromNetwork},
         To Network: ${toNetwork},
         To Currency: ${toCurrency},
         To Address: ${toAddress},
-        Request ID: ${requestId},
-        From Amount: ${fromAmountFormatted},
-        Fee Amount: ${feeAmountFormatted},
-        To Amount Min: ${toAmountMinFormatted},
-        To Amount: ${toAmountFormatted},
+        Fee Amount: ${feeAmount},
+        From Amount Formatted: ${fromAmountFormatted},
+        Fee Amount Formatted: ${feeAmountFormatted},
+        To Amount Min Formatted: ${toAmountMinFormatted},
+        To Amount Formatted: ${toAmountFormatted},
         Merchant Address: ${merchantAddress}`);
 
-    // Notify merchant if webhook URL is provided
-    if (merchantWebhook) {
-        const payload = {
-            transactionHash,
-            finalStatus,
-            fromAddress,
-            fromCurrency,
-            fromNetwork,
-            toNetwork,
-            toCurrency,
-            toAddress,
-            requestId,
-            fromAmountFormatted,
-            feeAmountFormatted,
-            toAmountMinFormatted,
-            toAmountFormatted,
-            merchantAddress,
-        };
+    // Process the transaction status, update DB, etc.
 
-        try {
-            const response = await axios.post(merchantWebhook, payload);
-            console.log(`Merchant notified: ${response.statusText}`);
-            res.status(200).json({ message: 'Merchant notified successfully' });
-        } catch (error) {
-            console.error(`Failed to notify merchant: ${error.message}`);
-            res.status(500).json({ error: 'Failed to notify merchant' });
-        }
-    } else {
-        res.status(400).json({ error: 'Merchant webhook URL missing' });
-    }
+    res.status(200).json({ message: 'Transaction status received successfully' });
 });
 
 module.exports = app;

@@ -13,16 +13,12 @@ app.post('/api/webhook', (req, res) => {
         transactionHash,
         finalStatus,
         requestId,
-        fromChainId,
-        toChainId,
-        nativeValue, // Assuming this represents the amount
         fromAddress, // Buyer address
         fromCurrency,
         fromNetwork,
         toNetwork,
         toCurrency,
         toAddress,
-        feeAmount,
         fromAmountFormatted, // Amount in formatted form
         feeAmountFormatted,
         toAmountMinFormatted,
@@ -35,20 +31,16 @@ app.post('/api/webhook', (req, res) => {
         Transaction Hash: ${transactionHash},
         Status: ${finalStatus},
         Request ID: ${requestId},
-        From Chain ID: ${fromChainId},
-        To Chain ID: ${toChainId},
-        Native Value: ${nativeValue},
         From Address: ${fromAddress},
         From Currency: ${fromCurrency},
         From Network: ${fromNetwork},
         To Network: ${toNetwork},
         To Currency: ${toCurrency},
         To Address: ${toAddress},
-        Fee Amount: ${feeAmount},
-        From Amount Formatted: ${fromAmountFormatted},
-        Fee Amount Formatted: ${feeAmountFormatted},
-        To Amount Min Formatted: ${toAmountMinFormatted},
-        To Amount Formatted: ${toAmountFormatted},
+        From Amount: ${fromAmountFormatted},
+        Fee Amount: ${feeAmountFormatted},
+        To Amount Min: ${toAmountMinFormatted},
+        To Amount: ${toAmountFormatted},
         Merchant Address: ${merchantAddress}`);
 
     // Process the transaction status, update DB, etc.

@@ -23,7 +23,8 @@ app.post('/api/webhook', (req, res) => {
         feeAmountFormatted,
         toAmountMinFormatted,
         toAmountFormatted,
-        merchantAddress
+        merchantAddress,
+        statusType
     } = req.body;
 
     // Log the received transaction update
@@ -41,7 +42,8 @@ app.post('/api/webhook', (req, res) => {
         Fee Amount: ${feeAmountFormatted},
         To Amount Min: ${toAmountMinFormatted},
         To Amount: ${toAmountFormatted},
-        Merchant Address: ${merchantAddress}`);
+        Merchant Address: ${merchantAddress},
+        Status Type: ${statusType}`);
 
     // Process the transaction status, update DB, etc.
 
